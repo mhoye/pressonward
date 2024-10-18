@@ -34,7 +34,7 @@ to include the specific steps you took if you can share them.
 * Create an empty database file somewhere appropriate with the sqlite3 command-line tool.
 * In wp-config.php, define two new variables DB_DIR and DB_FILE.
   - These are the path to and name of your SQLite file respectively; see wp-config-sample.php for the specific text.
-* Restart your web server, open up the site in a browser open wp-admin/install.php - not the normal login page.
+* Restart your web server, open up the site in a browser and append wp-admin/install.php to the base URL - not the normal login page.
 * Let Wordpress complete the installation process, then re-import your downloaded export.
 * Check to make sure your user accounts have been restored, and that you have the expected number of users and admins.
 * Check your site content for breakage.
