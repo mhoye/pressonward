@@ -12,15 +12,18 @@ apologize; for the most part those steps are better covered elsewhere.
 
 If you are migrating from an existing wordpress installation, please
 start by doing a full export of your existing content, and make sure
-you have a recent backup of your system available. i
+you have a recent backup of the underlying system available.
 
-_This is not_ an in-place migration, it is a back up and a restore.
+_This is not_ an in-place migration or upgrade; it is a backup,
+reinstall and restore exercise.
 
 This has been tested on one Debian-based machine running Apache as
-its web server. If you're using other operating systems or web servers,
-I hope that this give you enough information to get up and running,
-and would be glade to include the specific steps you took, if you can
-share them. 
+its web server. So "works on my machine", yes, but it does work on my
+machine.
+
+If you're using other operating systems or web servers, I hope this
+gives you enough information to get up and running. I'd would be glad
+to include the specific steps you took if you can share them. 
 
 ## Details:
 
