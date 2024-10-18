@@ -27,7 +27,7 @@ to include the specific steps you took if you can share them.
 
 ## Details:
 
-* Start by cloning this repository, and moving it's contents into the folder you want Apache to serve up.
+* Start by cloning this repository, and moving it's contents into the folder you want Apache to serve up. Exclude the hidden .git/ folder from the moving process.
 * You'll need to install PHP and PHP-SQLite support libraries.
   - On Debian, via apt, these are libapache-mod-php(VERSION) and php(VERSION)-sqlite3. (VERSION) has to match.
 * Create an empty database file somewhere appropriate with the sqlite3 command-line tool.
