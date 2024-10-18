@@ -28,15 +28,17 @@ to include the specific steps you took if you can share them.
 ## Details:
 
 * Start by cloning this repository, and moving it's contents into the folder you want Apache to serve up.
-* You'll need to install PHP and PHP-SQLite support libraries. 
-** On Debian, tis means libapache-mod-php(ver) and php(ver)-sqlite3 via apt. (ver) should match.
+* You'll need to install PHP and PHP-SQLite support libraries.
+- On Debian, via apt, these are libapache-mod-php(VERSION) and php(VERSION)-sqlite3. (VERSION) has to match.
 * Create an empty database file somewhere appropriate with the sqlite3 command-line tool.
-* In wp-config.php, define two new variables DB_DIR and DB_FILE
-** These are the path to and name of your SQLite file respectively; see wp-config-sample.php for the specific text.
-* Restart your web server, open up the site in a browser and log in.
-* Re-import your downloaded export.
+* In wp-config.php, define two new variables DB_DIR and DB_FILE.
+- These are the path to and name of your SQLite file respectively; see wp-config-sample.php for the specific text.
+* Restart your web server, open up the site in a browser open wp-admin/install.php - not the normal login page.
+* Let Wordpress complete the installation process, then re-import your downloaded export.
 * Check to make sure your user accounts have been restored, and that you have the expected number of users and admins.
 * Check your site content for breakage.
+* Restart Apache to test that it comes up cleanly.
+
 
 ## Addenda
 
