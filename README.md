@@ -22,8 +22,9 @@ its web server. So "works on my machine", yes, but it does work on my
 machine.
 
 If you're using other operating systems or web servers, I hope this
-gives you enough information to get up and running. I'd would be glad
-to include the specific steps you took if you can share them. 
+gives you enough information to get up and running. If you needed to
+take different steps or found any unexpected pitfalls I'd would be glad
+to include the specific steps you took if you can share them.
 
 ## Details:
 
