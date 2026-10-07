@@ -3,7 +3,7 @@ jQuery( function ( $ ) {
 	var mshotRetryTimer = null;
 	var mshotTries = 0;
 	var mshotRetryInterval = 1000;
-	var mshotEnabledLinkSelector = 'a[id^="author_comment_url"], tr.pingback td.column-author a:first-of-type, td.comment p a';
+	var mshotEnabledLinkSelector = 'a[id^="author_comment_url"], tr.pingback td.column-author a:first-of-type, td.comment p a, th.comment p a';
 
 	var preloadedMshotURLs = [];
 
@@ -131,7 +131,7 @@ jQuery( function ( $ ) {
 			$( 'body' ).append( mShot );
 
 			mshotRetryTimer = setTimeout( retryMshotUntilLoaded, mshotRetryInterval );
-		} ).on( 'mouseout', 'a[id^="author_comment_url"], tr.pingback td.column-author a:first-of-type, td.comment p a', function () {
+		} ).on( 'mouseout', 'a[id^="author_comment_url"], tr.pingback td.column-author a:first-of-type, td.comment p a, th.comment p a', function () {
 			mshotRemovalTimer = setTimeout( function () {
 				clearTimeout( mshotRetryTimer );
 
@@ -280,7 +280,7 @@ jQuery( function ( $ ) {
 	}
 	
 	if ( "start_recheck" in WPAkismet && WPAkismet.start_recheck ) {
-		$( '.checkforspam' ).click();
+		$( '.checkforspam:first' ).click();
 	}
 	
 	if ( typeof MutationObserver !== 'undefined' ) {
@@ -389,33 +389,9 @@ jQuery( function ( $ ) {
 		e.preventDefault();
 
 		var div = $( '.akismet-enter-api-key-box__form-wrapper' );
-		div.show( 500 );
+		div.show();
 		div.find( 'input[name=key]' ).focus();
 
 		$( this ).hide();
-	} );
-
-	/**
-	 * Hides the Connect with Jetpack form | Shows the Activate Akismet Account form
-	 */
-	$( 'a.toggle-ak-connect' ).on( 'click', function ( e ) {
-		e.preventDefault();
-
-		$( '.akismet-ak-connect' ).slideToggle('slow');
-		$( 'a.toggle-ak-connect' ).hide();
-		$( '.akismet-jp-connect' ).hide();
-		$( 'a.toggle-jp-connect' ).show();
-	} );
-
-	/**
-	 * Shows the Connect with Jetpack form | Hides the Activate Akismet Account form
-	 */
-	$( 'a.toggle-jp-connect' ).on( 'click', function ( e ) {
-		e.preventDefault();
-
-		$( '.akismet-jp-connect' ).slideToggle('slow');
-		$( 'a.toggle-jp-connect' ).hide();
-		$( '.akismet-ak-connect' ).hide();
-		$( 'a.toggle-ak-connect' ).show();
 	} );
 });

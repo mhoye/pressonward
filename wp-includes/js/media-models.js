@@ -1,8 +1,8 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 3343:
-/***/ ((module) => {
+/***/ 3343
+(module) {
 
 var $ = Backbone.$,
 	Attachment;
@@ -175,10 +175,10 @@ Attachment = Backbone.Model.extend(/** @lends wp.media.model.Attachment.prototyp
 module.exports = Attachment;
 
 
-/***/ }),
+/***/ },
 
-/***/ 8266:
-/***/ ((module) => {
+/***/ 8266
+(module) {
 
 /**
  * wp.media.model.Attachments
@@ -214,6 +214,8 @@ var Attachments = Backbone.Collection.extend(/** @lends wp.media.model.Attachmen
 	 * @param {Object} [options={}]
 	 */
 	initialize: function( models, options ) {
+		var normalizedOrder;
+
 		options = options || {};
 
 		this.props   = new Backbone.Model();
@@ -226,7 +228,19 @@ var Attachments = Backbone.Collection.extend(/** @lends wp.media.model.Attachmen
 		this.props.on( 'change:orderby', this._changeOrderby, this );
 		this.props.on( 'change:query',   this._changeQuery,   this );
 
-		this.props.set( _.defaults( options.props || {} ) );
+		options.props = options.props || {};
+
+		/*
+		 * Normalize the order, if one is set. `Attachments.comparator()` and the
+		 * `order` filter in `wp.media.model.Query` both test for the literal
+		 * strings 'ASC' and 'DESC', so anything else has to fall back to 'DESC'.
+		 */
+		if ( ! _.isUndefined( options.props.order ) && ! _.isNull( options.props.order ) ) {
+			normalizedOrder     = String( options.props.order ).toUpperCase();
+			options.props.order = ( 'ASC' === normalizedOrder || 'DESC' === normalizedOrder ) ? normalizedOrder : 'DESC';
+		}
+
+		this.props.set( options.props );
 
 		if ( options.observe ) {
 			this.observe( options.observe );
@@ -394,8 +408,6 @@ var Attachments = Backbone.Collection.extend(/** @lends wp.media.model.Attachmen
 		this.observers.push( attachments );
 
 		attachments.on( 'add change remove', this._validateHandler, this );
-		attachments.on( 'add', this._addToTotalAttachments, this );
-		attachments.on( 'remove', this._removeFromTotalAttachments, this );
 		attachments.on( 'reset', this._validateAllHandler, this );
 		this.validateAll( attachments );
 		return this;
@@ -491,6 +503,12 @@ var Attachments = Backbone.Collection.extend(/** @lends wp.media.model.Attachmen
 		// when `observe()` calls `validateAll()`.
 		this.reset( [], { silent: true } );
 		this.observe( attachments );
+
+		// Bind total attachment count tracking only to the mirrored query
+		// collection, not to additional observed collections (e.g. selection).
+		// See Trac #65053.
+		attachments.on( 'add', this._addToTotalAttachments, this );
+		attachments.on( 'remove', this._removeFromTotalAttachments, this );
 
 		// Used for the search results.
 		this.trigger( 'attachments:received', this );
@@ -783,10 +801,10 @@ var Attachments = Backbone.Collection.extend(/** @lends wp.media.model.Attachmen
 module.exports = Attachments;
 
 
-/***/ }),
+/***/ },
 
-/***/ 9104:
-/***/ ((module) => {
+/***/ 9104
+(module) {
 
 /**
  * wp.media.model.PostImage
@@ -944,10 +962,10 @@ var PostImage = Backbone.Model.extend(/** @lends wp.media.model.PostImage.protot
 module.exports = PostImage;
 
 
-/***/ }),
+/***/ },
 
-/***/ 1288:
-/***/ ((module) => {
+/***/ 1288
+(module) {
 
 var Attachments = wp.media.model.Attachments,
 	Query;
@@ -1202,12 +1220,6 @@ Query = Attachments.extend(/** @lends wp.media.model.Query.prototype */{
 			// Fill default args.
 			_.defaults( props, defaults );
 
-			// Normalize the order.
-			props.order = props.order.toUpperCase();
-			if ( 'DESC' !== props.order && 'ASC' !== props.order ) {
-				props.order = defaults.order.toUpperCase();
-			}
-
 			// Ensure we have a valid orderby value.
 			if ( ! _.contains( orderby.allowed, props.orderby ) ) {
 				props.orderby = defaults.orderby;
@@ -1255,10 +1267,10 @@ Query = Attachments.extend(/** @lends wp.media.model.Query.prototype */{
 module.exports = Query;
 
 
-/***/ }),
+/***/ },
 
-/***/ 4134:
-/***/ ((module) => {
+/***/ 4134
+(module) {
 
 var Attachments = wp.media.model.Attachments,
 	Selection;
@@ -1359,22 +1371,22 @@ Selection = Attachments.extend(/** @lends wp.media.model.Selection.prototype */{
 module.exports = Selection;
 
 
-/***/ })
+/***/ }
 
 /******/ 	});
 /************************************************************************/
 /******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
+/******/ 	const __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		const cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
 /******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 		const module = __webpack_module_cache__[moduleId] = {
 /******/ 			// no module.id needed
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
@@ -1388,9 +1400,6 @@ module.exports = Selection;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
 /**
  * @output wp-includes/js/media-models.js
  */
@@ -1629,8 +1638,6 @@ media.query = function( props ) {
 		props: _.extend( _.defaults( props || {}, { orderby: 'date' } ), { query: true } )
 	});
 };
-
-})();
 
 /******/ })()
 ;

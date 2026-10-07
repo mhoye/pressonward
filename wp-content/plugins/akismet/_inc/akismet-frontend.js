@@ -35,12 +35,15 @@
 		var lastMouseup = null;
 		var lastMousedown = null;
 		var mouseclicks = [];
+		var mouseclickCoordinates = [];
 
 		var mousemoveTimer = null;
 		var lastMousemoveX = null;
 		var lastMousemoveY = null;
+		var lastMousemoveTime = null;
 		var mousemoveStart = null;
 		var mousemoves = [];
+		var intervalsBetweenMousemovesAndClicks = [];
 
 		var touchmoveCountTimer = null;
 		var touchmoveCount = 0;
@@ -73,10 +76,12 @@
 			}
 
 			form.addEventListener( 'submit', function () {
-				var ak_bkp = prepare_timestamp_array_for_request( keypresses );
-				var ak_bmc = prepare_timestamp_array_for_request( mouseclicks );
-				var ak_bte = prepare_timestamp_array_for_request( touchEvents );
-				var ak_bmm = prepare_timestamp_array_for_request( mousemoves );
+				var ak_bkp = prepare_array_for_request( keypresses );
+				var ak_bmc = prepare_array_for_request( mouseclicks );
+				var ak_bte = prepare_array_for_request( touchEvents );
+				var ak_bmm = prepare_array_for_request( mousemoves );
+				var ak_bcc = prepare_array_for_request( mouseclickCoordinates );
+				var ak_bibmac = intervalsBetweenMousemovesAndClicks.slice( 0, 100 ).join( ';' );
 
 				var input_fields = {
 					// When did the user begin entering any input?
@@ -119,7 +124,13 @@
 					'btec' : touchEvents.length,
 
 					// How quickly did they move the mouse, and how long between moves?
-					'bmm' : ak_bmm
+					'bmm' : ak_bmm,
+
+					// Click coordinates
+					'bcc' : ak_bcc,
+
+					// Milliseconds between last mouse movement and each click
+					'bibmac' : ak_bibmac
 				};
 
 				var akismet_field_prefix = 'ak_';
@@ -228,6 +239,26 @@
 
 		document.addEventListener( 'mousedown', function ( e ) {
 			lastMousedown = ( new Date() ).getTime();
+
+			if ( lastMousemoveTime ) {
+				intervalsBetweenMousemovesAndClicks.push( lastMousedown - lastMousemoveTime );
+			}
+
+			var mouseclickCoordinate = [];
+
+			var rect = e.target.getBoundingClientRect();
+			var relativeX = e.clientX - rect.left;
+			var relativeY = e.clientY - rect.top;
+
+			// Pixel offset of the click within the target element.
+			mouseclickCoordinate.push( Math.round( relativeX ) );
+			mouseclickCoordinate.push( Math.round( relativeY ) );
+
+			// Percentage offset of the click within the target element.
+			mouseclickCoordinate.push( rect.width > 0 ? Math.round( relativeX / rect.width * 100 ) : 0 );
+			mouseclickCoordinate.push( rect.height > 0 ? Math.round( relativeY / rect.height * 100 ) : 0 );
+
+			mouseclickCoordinates.push( mouseclickCoordinate );
 		}, supportsPassive ? { passive: true } : false  );
 
 		document.addEventListener( 'mouseup', function ( e ) {
@@ -256,12 +287,14 @@
 		}, supportsPassive ? { passive: true } : false  );
 
 		document.addEventListener( 'mousemove', function ( e ) {
+			lastMousemoveTime = ( new Date() ).getTime();
+
 			if ( mousemoveTimer ) {
 				clearTimeout( mousemoveTimer );
 				mousemoveTimer = null;
 			}
 			else {
-				mousemoveStart = ( new Date() ).getTime();
+				mousemoveStart = lastMousemoveTime;
 				lastMousemoveX = e.offsetX;
 				lastMousemoveY = e.offsetY;
 			}
@@ -341,10 +374,11 @@
 	}
 
 	/**
-	 * For the timestamp data that is collected, don't send more than `limit` data points in the request.
-	 * Choose a random slice and send those.
+	 * For the timing/coordinate data that is collected, don't send more than `limit` data points in the request.
+	 * Choose a random slice and send those, with each batch separated by semicolons and the items in each batch
+	 * separated by commas.
 	 */
-	function prepare_timestamp_array_for_request( a, limit ) {
+	function prepare_array_for_request( a, limit ) {
 		if ( ! limit ) {
 			limit = 100;
 		}
@@ -355,13 +389,8 @@
 			var random_starting_point = Math.max( 0, Math.floor( Math.random() * a.length - limit ) );
 
 			for ( var i = 0; i < limit && i < a.length; i++ ) {
-				rv += a[ random_starting_point + i ][0];
-
-				if ( a[ random_starting_point + i ].length >= 2 ) {
-					rv += "," + a[ random_starting_point + i ][1];
-				}
-
-				rv += ";";
+				var entry = a[ random_starting_point + i ];
+				rv += entry.join( ',' ) + ';';
 			}
 		}
 
